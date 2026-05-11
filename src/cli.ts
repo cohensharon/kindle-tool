@@ -6,6 +6,7 @@ import {
   getArticleUrlValidationError,
   looksLikeEmail,
 } from "./utils/validation.js";
+import { sendArticleToKindle } from "./pipeline/sendArticleToKindle.js";
 
 type Prompt = (question: string) => Promise<string>;
 
@@ -70,6 +71,32 @@ async function collectKindleEmail(
   }
 }
 
+async function processArticles(
+  urls: string[],
+  kindleEmail: string,
+): Promise<void> {
+  console.log(`\nProcessing ${urls.length} article(s)...`);
+
+  for (const [index, url] of urls.entries()) {
+    console.log(`\n[${index + 1}/${urls.length}] Processing ${url}`);
+
+    try {
+      const result = await sendArticleToKindle({ url, kindleEmail });
+
+      if (result.success) {
+        console.log(`Sent: ${result.article.title}`);
+      } else {
+        console.log(`Error: ${result.error}`);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      console.log(`Error: ${message}`);
+    }
+  }
+
+  console.log("\nDone.");
+}
+
 async function main(): Promise<void> {
   const readline = createInterface({ input, output });
 
@@ -78,13 +105,7 @@ async function main(): Promise<void> {
     const urls = await collectArticleUrls(prompt);
     const kindleEmail = await collectKindleEmail(prompt);
 
-    console.log("\nURLs:");
-    for (const url of urls) {
-      console.log(`- ${url}`);
-    }
-
-    console.log("\nKindle email:");
-    console.log(kindleEmail);
+    await processArticles(urls, kindleEmail);
   } finally {
     readline.close();
   }
