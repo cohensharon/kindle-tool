@@ -16,6 +16,7 @@ export type SendArticleResult =
       success: true;
       article: ExtractedArticle;
       kindleEmail: string;
+      epubFilePath: string;
     }
   | {
       success: false;

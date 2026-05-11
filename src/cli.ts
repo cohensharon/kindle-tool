@@ -85,6 +85,7 @@ async function processArticles(
 
       if (result.success) {
         console.log(`Sent: ${result.article.title}`);
+        console.log(`EPUB generated at: ${result.epubFilePath}`);
       } else {
         console.log(`Error: ${result.error}`);
       }
