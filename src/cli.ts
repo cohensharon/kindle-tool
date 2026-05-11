@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import "dotenv/config";
 import { createInterface, type Interface as ReadlineInterface } from "node:readline";
 import { stdin as input, stdout as output } from "node:process";
 import {

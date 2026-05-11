@@ -17,13 +17,16 @@
   "devDependencies": {
     "@types/jsdom": "^28.0.1",
     "@types/node": "^25.7.0",
+    "@types/nodemailer": "^8.0.0",
     "@types/yazl": "^3.3.1",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3"
   },
   "dependencies": {
     "@mozilla/readability": "^0.6.0",
+    "dotenv": "^17.4.2",
     "jsdom": "^29.1.1",
+    "nodemailer": "^8.0.7",
     "yazl": "^3.3.1"
   }
 }
