@@ -2,7 +2,10 @@
 
 import { createInterface, type Interface as ReadlineInterface } from "node:readline";
 import { stdin as input, stdout as output } from "node:process";
-import { looksLikeEmail } from "./utils/validation.js";
+import {
+  getArticleUrlValidationError,
+  looksLikeEmail,
+} from "./utils/validation.js";
 
 type Prompt = (question: string) => Promise<string>;
 
@@ -42,9 +45,14 @@ async function collectArticleUrls(
       return urls;
     }
 
-    if (answer.length > 0) {
-      urls.push(answer);
+    const validationError = getArticleUrlValidationError(answer);
+
+    if (validationError !== null) {
+      console.log(validationError);
+      continue;
     }
+
+    urls.push(answer);
   }
 }
 
