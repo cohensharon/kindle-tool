@@ -1,16 +1,25 @@
 import type { ArticleInput, SendArticleResult } from "../types/article.js";
+import { extractArticle } from "../services/extractArticle.js";
 
 export async function sendArticleToKindle(
   input: ArticleInput,
 ): Promise<SendArticleResult> {
-  return {
-    success: true,
-    kindleEmail: input.kindleEmail,
-    article: {
-      title: "Fake Article Title",
-      contentHtml: "<p>Fake article content.</p>",
-      textContent: "Fake article content.",
-      sourceUrl: input.url,
-    },
-  };
+  try {
+    const article = await extractArticle(input.url);
+
+    return {
+      success: true,
+      kindleEmail: input.kindleEmail,
+      article,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+
+    return {
+      success: false,
+      url: input.url,
+      kindleEmail: input.kindleEmail,
+      error: message,
+    };
+  }
 }
