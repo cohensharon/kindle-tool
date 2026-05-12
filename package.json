@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "tsx src/cli.ts",
     "build": "tsc",
-    "start": "node dist/cli.js"
+    "start": "node dist/cli.js",
+    "clean": "tsx scripts/cleanGenerated.ts"
   },
   "keywords": [],
   "author": "",

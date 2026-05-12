@@ -11,16 +11,39 @@ export interface ExtractedArticle {
   sourceUrl: string;
 }
 
+export type ArticlePipelineProgress =
+  | {
+      step: "fetching";
+      url: string;
+    }
+  | {
+      step: "epubGenerated";
+      url: string;
+      title: string;
+      epubPath: string;
+    }
+  | {
+      url: string;
+      step: "sending";
+      title: string;
+      epubPath: string;
+    };
+
+export interface SendArticleOptions {
+  onProgress?: (progress: ArticlePipelineProgress) => void | Promise<void>;
+}
+
 export type SendArticleResult =
   | {
       success: true;
-      article: ExtractedArticle;
-      kindleEmail: string;
-      epubFilePath: string;
+      url: string;
+      title: string;
+      epubPath: string;
     }
   | {
       success: false;
       url: string;
-      kindleEmail: string;
+      title?: string;
+      epubPath?: string;
       error: string;
     };

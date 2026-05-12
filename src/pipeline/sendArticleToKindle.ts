@@ -1,4 +1,8 @@
-import type { ArticleInput, SendArticleResult } from "../types/article.js";
+import type {
+  ArticleInput,
+  SendArticleOptions,
+  SendArticleResult,
+} from "../types/article.js";
 import { extractArticle } from "../services/extractArticle.js";
 import { generateEpub } from "../services/generateEpub.js";
 import { sendEmail } from "../services/sendEmail.js";
@@ -6,23 +10,43 @@ import { validateGeneratedEpub } from "../utils/epubValidation.js";
 
 export async function sendArticleToKindle(
   input: ArticleInput,
+  options: SendArticleOptions = {},
 ): Promise<SendArticleResult> {
+  let title: string | undefined;
+  let epubPath: string | undefined;
+
   try {
+    await options.onProgress?.({ step: "fetching", url: input.url });
+
     const article = await extractArticle(input.url);
-    const epubFilePath = await generateEpub(article);
-    await validateGeneratedEpub(epubFilePath);
+    title = article.title;
+    epubPath = await generateEpub(article);
+    await validateGeneratedEpub(epubPath);
+    await options.onProgress?.({
+      step: "epubGenerated",
+      url: input.url,
+      title,
+      epubPath,
+    });
+
+    await options.onProgress?.({
+      step: "sending",
+      url: input.url,
+      title,
+      epubPath,
+    });
     await sendEmail({
       to: input.kindleEmail,
-      subject: article.title,
-      text: `Attached EPUB for "${article.title}".\n\nSource: ${article.sourceUrl}`,
-      attachmentPath: epubFilePath,
+      subject: title,
+      text: `Attached EPUB for "${title}".\n\nSource: ${article.sourceUrl}`,
+      attachmentPath: epubPath,
     });
 
     return {
       success: true,
-      kindleEmail: input.kindleEmail,
-      article,
-      epubFilePath,
+      url: input.url,
+      title,
+      epubPath,
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
@@ -30,7 +54,8 @@ export async function sendArticleToKindle(
     return {
       success: false,
       url: input.url,
-      kindleEmail: input.kindleEmail,
+      title,
+      epubPath,
       error: message,
     };
   }

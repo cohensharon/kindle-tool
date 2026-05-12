@@ -8,6 +8,7 @@ import {
   looksLikeEmail,
 } from "./utils/validation.js";
 import { sendArticleToKindle } from "./pipeline/sendArticleToKindle.js";
+import type { SendArticleResult } from "./types/article.js";
 
 type Prompt = (question: string) => Promise<string>;
 
@@ -77,26 +78,44 @@ async function processArticles(
   kindleEmail: string,
 ): Promise<void> {
   console.log(`\nProcessing ${urls.length} article(s)...`);
+  const results: SendArticleResult[] = [];
 
   for (const [index, url] of urls.entries()) {
-    console.log(`\n[${index + 1}/${urls.length}] Processing ${url}`);
+    console.log(`[${index + 1}/${urls.length}] Processing ${url}`);
 
     try {
       const result = await sendArticleToKindle({ url, kindleEmail });
-
-      if (result.success) {
-        console.log(`Sent: ${result.article.title}`);
-        console.log(`EPUB generated at: ${result.epubFilePath}`);
-      } else {
-        console.log(`Error: ${result.error}`);
-      }
+      results.push(result);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
-      console.log(`Error: ${message}`);
+      results.push({
+        success: false,
+        url,
+        error: message,
+      });
     }
   }
 
-  console.log("\nDone.");
+  printArticleReport(results);
+}
+
+function printArticleReport(results: SendArticleResult[]): void {
+  console.log("\nReport:");
+
+  for (const [index, result] of results.entries()) {
+    const position = `[${index + 1}/${results.length}]`;
+
+    if (result.success) {
+      console.log(`${position} ✅ Sent to Kindle: ${result.title} (${result.url})`);
+    } else {
+      console.log(`${position} ❌ Failed: ${result.error} (${result.url})`);
+    }
+  }
+
+  const successfulCount = results.filter((result) => result.success).length;
+  const failedCount = results.length - successfulCount;
+
+  console.log(`\nDone. Successful: ${successfulCount} Failed: ${failedCount}`);
 }
 
 async function main(): Promise<void> {
