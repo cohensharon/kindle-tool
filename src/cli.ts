@@ -9,6 +9,7 @@ import {
 } from "./utils/validation.js";
 import { sendArticleToKindle } from "./pipeline/sendArticleToKindle.js";
 import type { SendArticleResult } from "./types/article.js";
+import { log } from "./utils/log.js";
 
 type Prompt = (question: string) => Promise<string>;
 
@@ -41,7 +42,7 @@ async function collectArticleUrls(
 
     if (answer.toLowerCase() === "done") {
       if (urls.length === 0) {
-        console.log("Please enter at least one article URL before continuing.");
+        log.error("Please enter at least one article URL before continuing.");
         continue;
       }
 
@@ -51,7 +52,7 @@ async function collectArticleUrls(
     const validationError = getArticleUrlValidationError(answer);
 
     if (validationError !== null) {
-      console.log(validationError);
+      log.error(validationError);
       continue;
     }
 
@@ -69,7 +70,7 @@ async function collectKindleEmail(
       return email;
     }
 
-    console.log("Please enter a valid email address.");
+    log.error("Please enter a valid email address.");
   }
 }
 
@@ -77,11 +78,11 @@ async function processArticles(
   urls: string[],
   kindleEmail: string,
 ): Promise<void> {
-  console.log(`\nProcessing ${urls.length} article(s)...`);
+  log.info(`Processing ${urls.length} article(s)...`);
   const results: SendArticleResult[] = [];
 
   for (const [index, url] of urls.entries()) {
-    console.log(`[${index + 1}/${urls.length}] Processing ${url}`);
+    log.info(`[${index + 1}/${urls.length}] Processing ${url}`);
 
     try {
       const result = await sendArticleToKindle({ url, kindleEmail });
@@ -100,22 +101,28 @@ async function processArticles(
 }
 
 function printArticleReport(results: SendArticleResult[]): void {
-  console.log("\nReport:");
+  log.info("Report:");
 
   for (const [index, result] of results.entries()) {
     const position = `[${index + 1}/${results.length}]`;
 
     if (result.success) {
-      console.log(`${position} ✅ Sent to Kindle: ${result.title} (${result.url})`);
+      log.success(`${position} Sent to Kindle: ${result.title} (${result.url})`);
     } else {
-      console.log(`${position} ❌ Failed: ${result.error} (${result.url})`);
+      log.error(`${position} Failed: ${result.error} (${result.url})`);
     }
   }
 
   const successfulCount = results.filter((result) => result.success).length;
   const failedCount = results.length - successfulCount;
 
-  console.log(`\nDone. Successful: ${successfulCount} Failed: ${failedCount}`);
+  const summary = `Done. Successful: ${successfulCount} Failed: ${failedCount}`;
+
+  if (failedCount > 0) {
+    log.warn(summary);
+  } else {
+    log.success(summary);
+  }
 }
 
 async function main(): Promise<void> {
@@ -133,6 +140,7 @@ async function main(): Promise<void> {
 }
 
 main().catch((error: unknown) => {
-  console.error(error);
+  const message = error instanceof Error ? error.message : "Unknown error";
+  log.error(message);
   process.exitCode = 1;
 });

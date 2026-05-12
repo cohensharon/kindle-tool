@@ -1,5 +1,6 @@
 import { readdir, rm } from "node:fs/promises";
 import path from "node:path";
+import { log } from "../src/utils/log.js";
 
 const generatedDirectory = path.resolve("generated");
 
@@ -10,7 +11,7 @@ async function cleanGeneratedEpubs(): Promise<void> {
     entries = await readdir(generatedDirectory);
   } catch (error) {
     if (isErrnoException(error) && error.code === "ENOENT") {
-      console.log("No generated directory found. Nothing to clean.");
+      log.warn("No generated directory found. Nothing to clean.");
       return;
     }
 
@@ -27,7 +28,7 @@ async function cleanGeneratedEpubs(): Promise<void> {
     ),
   );
 
-  console.log(`Deleted ${epubFiles.length} EPUB file(s) from generated/.`);
+  log.success(`Deleted ${epubFiles.length} EPUB file(s) from generated/.`);
 }
 
 function isErrnoException(error: unknown): error is NodeJS.ErrnoException {
@@ -36,6 +37,6 @@ function isErrnoException(error: unknown): error is NodeJS.ErrnoException {
 
 cleanGeneratedEpubs().catch((error: unknown) => {
   const message = error instanceof Error ? error.message : "Unknown error";
-  console.error(`Failed to clean generated EPUBs: ${message}`);
+  log.error(`Failed to clean generated EPUBs: ${message}`);
   process.exitCode = 1;
 });
