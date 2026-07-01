@@ -9,19 +9,35 @@
 
 ## Folder Structure
 
+### Current
+
+- `src/cli.ts` — CLI entrypoint
+- `src/pipeline/` — orchestration (`sendArticleToKindle`)
+- `src/services/` — extract article, generate EPUB, send email
+- `src/types/` — shared types
+- `src/utils/` — validation, EPUB checks, logging
+- `scripts/` — utility scripts
+- `docs/` — project documentation
+- `docs/tickets/` — detailed ticket specs
+
+### Target
+
 - `app/` — Next.js UI and API routes
 - `app/api/` — server-side API endpoints
-- `lib/` — reusable business logic
-- `cli/` or `scripts/` — CLI entrypoints
+- `lib/` — reusable business logic (migrated from `src/`)
+- `src/cli.ts` or `cli/` — thin CLI wrapper
 - `docs/` — project documentation
-- `tickets/` — implementation tickets
+- `docs/tickets/` — detailed ticket specs
 - `tests/` — test files
+
+During Phase 1 tickets, code may live in both `src/` and `lib/` while services are extracted. Prefer moving logic into `lib/` as each ticket completes rather than duplicating it.
 
 ## Architecture Rules
 
 - API route handlers should orchestrate only.
 - Business logic belongs in `lib/`.
 - CLI should be a thin wrapper around reusable services.
+- Both CLI and API call `sendArticleToKindle` for the full per-article flow.
 - Services should have typed inputs and outputs.
 - Avoid duplicating logic between CLI and API.
 
