@@ -31,6 +31,7 @@ export type ArticlePipelineProgress =
 
 export interface SendArticleOptions {
   onProgress?: (progress: ArticlePipelineProgress) => void | Promise<void>;
+  epubOutputDirectory?: string;
 }
 
 export type SendArticleResult =

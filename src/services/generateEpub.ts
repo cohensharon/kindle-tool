@@ -7,11 +7,14 @@ import type { ExtractedArticle } from "../types/article.js";
 
 const generatedDirectory = "generated";
 
-export async function generateEpub(article: ExtractedArticle): Promise<string> {
-  await mkdir(generatedDirectory, { recursive: true });
+export async function generateEpub(
+  article: ExtractedArticle,
+  outputDirectory = generatedDirectory,
+): Promise<string> {
+  await mkdir(outputDirectory, { recursive: true });
 
   const fileName = `${toSafeFileName(article.title)}.epub`;
-  const epubPath = path.join(generatedDirectory, fileName);
+  const epubPath = path.join(outputDirectory, fileName);
   const bookId = randomUUID();
   const zipFile = new ZipFile();
   const output = createWriteStream(epubPath);

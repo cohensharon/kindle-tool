@@ -20,7 +20,7 @@ export async function sendArticleToKindle(
 
     const article = await extractArticle(input.url);
     title = article.title;
-    epubPath = await generateEpub(article);
+    epubPath = await generateEpub(article, options.epubOutputDirectory);
     await validateGeneratedEpub(epubPath);
     await options.onProgress?.({
       step: "epubGenerated",

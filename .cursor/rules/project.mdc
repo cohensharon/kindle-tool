@@ -1,0 +1,14 @@
+---
+description: General project rules
+alwaysApply: true
+---
+
+# Project Rules
+
+- This is a TypeScript Next.js web app that wraps an existing Send-to-Kindle CLI.
+- Prefer small, focused changes.
+- Do not rewrite working logic unless necessary.
+- Preserve existing CLI behavior while extracting reusable services.
+- Before coding, inspect relevant files.
+- After coding, explain what changed and how to test it.
+- Use clear error handling and typed return values.

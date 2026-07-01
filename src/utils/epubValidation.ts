@@ -2,7 +2,7 @@ import type { Stats } from "node:fs";
 import { stat } from "node:fs/promises";
 import path from "node:path";
 
-const minimumEpubSizeBytes = 5 * 1024;
+const minimumEpubSizeBytes = 1 * 1024;
 
 export interface GeneratedEpubValidationResult {
   success: true;

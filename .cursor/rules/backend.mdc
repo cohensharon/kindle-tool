@@ -1,0 +1,16 @@
+---
+description: Backend/API rules
+globs:
+  - "app/api/**/*.ts"
+  - "lib/**/*.ts"
+---
+
+# Backend Rules
+
+- API routes should validate input before doing work.
+- Keep business logic out of route handlers.
+- Put reusable logic in `lib/`.
+- Return structured JSON responses.
+- Never expose email credentials or API keys to the client.
+- Use environment variables for secrets.
+- Prefer pure functions where possible.
