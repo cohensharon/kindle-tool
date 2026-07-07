@@ -2,14 +2,15 @@
   "name": "article-to-kindle",
   "version": "1.0.0",
   "description": "Minimal CLI scaffold for sending articles to Kindle.",
-  "main": "dist/cli.js",
+  "main": "dist/src/cli.js",
   "bin": {
-    "article-to-kindle": "dist/cli.js"
+    "article-to-kindle": "dist/src/cli.js"
   },
   "scripts": {
     "dev": "tsx src/cli.ts",
     "build": "tsc",
-    "start": "node dist/cli.js",
+    "start": "node dist/src/cli.js",
+    "test": "tsx --test tests/validateArticleUrls.test.ts",
     "clean": "tsx scripts/cleanGenerated.ts"
   },
   "keywords": [],

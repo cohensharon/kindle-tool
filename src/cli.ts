@@ -3,10 +3,8 @@
 import "dotenv/config";
 import { createInterface, type Interface as ReadlineInterface } from "node:readline";
 import { stdin as input, stdout as output } from "node:process";
-import {
-  getArticleUrlValidationError,
-  looksLikeEmail,
-} from "./utils/validation.js";
+import { validateArticleUrl } from "../lib/validateArticleUrls.js";
+import { looksLikeEmail } from "./utils/validation.js";
 import { sendArticleToKindle } from "./pipeline/sendArticleToKindle.js";
 import type { SendArticleResult } from "./types/article.js";
 import { log } from "./utils/log.js";
@@ -49,14 +47,14 @@ async function collectArticleUrls(
       return urls;
     }
 
-    const validationError = getArticleUrlValidationError(answer);
+    const validationResult = validateArticleUrl(answer);
 
-    if (validationError !== null) {
-      log.error(validationError);
+    if (!validationResult.valid) {
+      log.error(validationResult.error);
       continue;
     }
 
-    urls.push(answer);
+    urls.push(validationResult.url);
   }
 }
 
