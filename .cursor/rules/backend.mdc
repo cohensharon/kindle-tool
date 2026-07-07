@@ -3,6 +3,8 @@ description: Backend/API rules
 globs:
   - "app/api/**/*.ts"
   - "lib/**/*.ts"
+  - "src/services/**"
+  - "src/pipeline/**"
 ---
 
 # Backend Rules
