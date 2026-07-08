@@ -2,10 +2,16 @@
 
 import { useMemo, useState } from "react";
 import UrlInput from "./components/UrlInput";
+import ResultsList from "./components/ResultsList";
 import {
   validateKindleEmail,
   validateArticleUrlForWeb,
 } from "../lib/clientValidation";
+import type {
+  SendToKindleApiResult,
+  SendToKindleSuccessResponse,
+  SendToKindleErrorResponse,
+} from "../lib/apiTypes";
 
 export default function HomePage() {
   const [kindleEmail, setKindleEmail] = useState("");
@@ -13,6 +19,10 @@ export default function HomePage() {
 
   const [urls, setUrls] = useState<string[]>([""]);
   const [urlsTouched, setUrlsTouched] = useState<boolean[]>([false]);
+
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState<SendToKindleApiResult[] | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const emailResult = useMemo(
     () => (kindleEmail.trim() ? validateKindleEmail(kindleEmail) : null),
@@ -62,9 +72,42 @@ export default function HomePage() {
     });
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // API integration is out of scope for this ticket
+    if (!isFormValid || loading) return;
+
+    const payload = {
+      kindleEmail: kindleEmail.trim(),
+      urls: urls.map((u) => u.trim()).filter((u) => u.length > 0),
+    };
+
+    setLoading(true);
+    setFormError(null);
+    setResults(null);
+
+    try {
+      const res = await fetch("/api/send-to-kindle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        const data = (await res.json()) as SendToKindleSuccessResponse;
+        setResults(data.results);
+      } else {
+        const data = (await res.json()) as SendToKindleErrorResponse;
+        setFormError(
+          data.error ?? "An unexpected error occurred. Please try again.",
+        );
+      }
+    } catch {
+      setFormError(
+        "Network error. Please check your connection and try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -85,45 +128,55 @@ export default function HomePage() {
       </div>
 
       <form onSubmit={handleSubmit} noValidate>
-        <div className="field">
-          <label htmlFor="kindleEmail">Kindle Email</label>
-          <input
-            id="kindleEmail"
-            type="email"
-            value={kindleEmail}
-            onChange={(e) => setKindleEmail(e.target.value)}
-            onBlur={() => setEmailTouched(true)}
-            placeholder="you@kindle.com"
-            aria-describedby={emailError ? "email-error" : undefined}
-            aria-invalid={emailError ? "true" : undefined}
-            autoComplete="email"
-          />
-          {emailError && (
-            <p id="email-error" className="field-error" role="alert">
-              {emailError}
+        <fieldset disabled={loading} style={{ border: "none", padding: 0, margin: 0 }}>
+          <div className="field">
+            <label htmlFor="kindleEmail">Kindle Email</label>
+            <input
+              id="kindleEmail"
+              type="email"
+              value={kindleEmail}
+              onChange={(e) => setKindleEmail(e.target.value)}
+              onBlur={() => setEmailTouched(true)}
+              placeholder="you@kindle.com"
+              aria-describedby={emailError ? "email-error" : undefined}
+              aria-invalid={emailError ? "true" : undefined}
+              autoComplete="email"
+            />
+            {emailError && (
+              <p id="email-error" className="field-error" role="alert">
+                {emailError}
+              </p>
+            )}
+          </div>
+
+          <div className="field">
+            <label>Article URLs</label>
+            <UrlInput
+              urls={urls}
+              errors={urlErrors}
+              onChange={handleUrlsChange}
+              onBlur={handleUrlBlur}
+            />
+          </div>
+
+          {formError && (
+            <p className="form-error" role="alert">
+              {formError}
             </p>
           )}
-        </div>
 
-        <div className="field">
-          <label>Article URLs</label>
-          <UrlInput
-            urls={urls}
-            errors={urlErrors}
-            onChange={handleUrlsChange}
-            onBlur={handleUrlBlur}
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="btn-submit"
-          disabled={!isFormValid}
-          aria-disabled={!isFormValid}
-        >
-          Send to Kindle
-        </button>
+          <button
+            type="submit"
+            className="btn-submit"
+            disabled={!isFormValid || loading}
+            aria-disabled={!isFormValid || loading}
+          >
+            {loading ? "Sending…" : "Send to Kindle"}
+          </button>
+        </fieldset>
       </form>
+
+      {results && <ResultsList results={results} />}
     </main>
   );
 }

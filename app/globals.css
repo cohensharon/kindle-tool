@@ -146,6 +146,47 @@ input[aria-invalid="true"]:focus {
   background: #eaf3fb;
 }
 
+.form-error {
+  background: #fff0f0;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  color: #721c24;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+.results {
+  margin-top: 1.75rem;
+  border-top: 1px solid #eee;
+  padding-top: 1.25rem;
+}
+
+.results h2 {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.results ul {
+  list-style: none;
+  padding: 0;
+}
+
+.result-item {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.9rem;
+  word-break: break-all;
+}
+
+.result-success .result-status {
+  color: #2d6a2d;
+}
+
+.result-error .result-status {
+  color: #d9534f;
+}
+
 .btn-submit {
   width: 100%;
   padding: 0.75rem;
