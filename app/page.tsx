@@ -13,6 +13,8 @@ import type {
   SendToKindleErrorResponse,
 } from "../lib/apiTypes";
 
+const fromEmail = process.env.NEXT_PUBLIC_FROM_EMAIL;
+
 export default function HomePage() {
   const [kindleEmail, setKindleEmail] = useState("");
   const [emailTouched, setEmailTouched] = useState(false);
@@ -72,6 +74,13 @@ export default function HomePage() {
     });
   }
 
+  function handleClear() {
+    setResults(null);
+    setFormError(null);
+    setUrls([""]);
+    setUrlsTouched([false]);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!isFormValid || loading) return;
@@ -119,18 +128,48 @@ export default function HomePage() {
       </p>
 
       <div className="notice" role="note">
-        <strong>Important:</strong> The sending address for this app must be on
-        your{" "}
+        <strong>Important:</strong>{" "}
+        {fromEmail ? (
+          <>
+            <strong>{fromEmail}</strong> must be on your{" "}
+          </>
+        ) : (
+          <>The sending address for this app must be on your{" "}</>
+        )}
         <strong>Approved Personal Document E&#8209;mail List</strong> in Amazon.
-        Go to <em>Manage Your Content and Devices → Preferences → Personal
-        Document Settings</em> to add it. This is not the Kindle address you
-        enter below.
+        Go to{" "}
+        <em>
+          Manage Your Content and Devices → Preferences → Personal Document
+          Settings
+        </em>{" "}
+        to add it. This is not the Kindle address you enter below.
       </div>
 
       <form onSubmit={handleSubmit} noValidate>
-        <fieldset disabled={loading} style={{ border: "none", padding: 0, margin: 0 }}>
+        <fieldset
+          disabled={loading}
+          style={{ border: "none", padding: 0, margin: 0 }}
+        >
           <div className="field">
-            <label htmlFor="kindleEmail">Kindle Email</label>
+            <div className="label-row">
+              <label htmlFor="kindleEmail">Kindle Email</label>
+              <div className="tooltip-wrapper">
+                <button
+                  type="button"
+                  className="tooltip-trigger"
+                  aria-label="Where to find your Kindle email"
+                >
+                  ?
+                </button>
+                <div className="tooltip-box" role="tooltip">
+                  Find your Kindle address at Amazon →{" "}
+                  <strong>Manage Your Content and Devices</strong> →{" "}
+                  <strong>Preferences</strong> →{" "}
+                  <strong>Personal Document Settings</strong>. It&apos;s usually
+                  a @kindle.com address. Any valid email format is accepted.
+                </div>
+              </div>
+            </div>
             <input
               id="kindleEmail"
               type="email"
@@ -176,7 +215,7 @@ export default function HomePage() {
         </fieldset>
       </form>
 
-      {results && <ResultsList results={results} />}
+      {results && <ResultsList results={results} onClear={handleClear} />}
     </main>
   );
 }

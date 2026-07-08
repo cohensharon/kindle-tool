@@ -56,13 +56,20 @@ export default function UrlInput({
           </button>
         </div>
       ))}
-      <button
-        type="button"
-        className="btn-add"
-        onClick={() => onChange([...urls, ""])}
-      >
-        + Add URL
-      </button>
+      <div className="url-actions">
+        <button
+          type="button"
+          className="btn-add"
+          onClick={() => onChange([...urls, ""])}
+        >
+          + Add URL
+        </button>
+        {urls.length === 1 && (
+          <span className="url-helper">
+            Use + to send multiple articles at once.
+          </span>
+        )}
+      </div>
     </div>
   );
 }
