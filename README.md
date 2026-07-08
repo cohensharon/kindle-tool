@@ -6,7 +6,7 @@
 
 A single-page form where you enter your Kindle email and one or more article URLs. The app converts each article to an EPUB and emails it to your device.
 
-**Live demo:** [https://kindle-tool-jmpbbwx10-cohensharon1995-8830s-projects.vercel.app/](https://kindle-tool-jmpbbwx10-cohensharon1995-8830s-projects.vercel.app/)
+**Live demo:** [https://kindle-tool.vercel.app/](https://kindle-tool.vercel.app/)
 
 ### Run the web app locally
 
@@ -34,11 +34,11 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Web app commands
 
-| Command | Description |
-|---|---|
-| `npm run dev:web` | Start the Next.js development server |
+| Command             | Description                          |
+| ------------------- | ------------------------------------ |
+| `npm run dev:web`   | Start the Next.js development server |
 | `npm run build:web` | Build the Next.js app for production |
-| `npm run start:web` | Start the built Next.js app |
+| `npm run start:web` | Start the built Next.js app          |
 
 ## CLI
 
@@ -96,24 +96,24 @@ Done. Successful: 1 Failed: 1
 
 ### CLI commands
 
-| Command | Description |
-|---|---|
-| `npm run dev` | Run the CLI with `tsx` (no build step) |
-| `npm run build` | Compile TypeScript CLI into `dist/` |
-| `npm start` | Run the compiled CLI from `dist/` |
+| Command         | Description                                      |
+| --------------- | ------------------------------------------------ |
+| `npm run dev`   | Run the CLI with `tsx` (no build step)           |
+| `npm run build` | Compile TypeScript CLI into `dist/`              |
+| `npm start`     | Run the compiled CLI from `dist/`                |
 | `npm run clean` | Delete generated `.epub` files from `generated/` |
 
 ## Environment Variables
 
 Both the web app and the CLI share the same SMTP variables. The web app reads from `.env.local`; the CLI reads from `.env`.
 
-| Variable | Required | Description |
-|---|---|---|
-| `SMTP_HOST` | Yes | SMTP server hostname (e.g. `smtp.gmail.com`) |
-| `SMTP_PORT` | Yes | SMTP port — usually `587` (TLS) or `465` (SSL) |
-| `SMTP_USER` | Yes | SMTP username |
-| `SMTP_PASS` | Yes | SMTP password or app password |
-| `FROM_EMAIL` | Yes | Sender address — must be approved in Amazon Kindle settings |
+| Variable                 | Required | Description                                                                                         |
+| ------------------------ | -------- | --------------------------------------------------------------------------------------------------- |
+| `SMTP_HOST`              | Yes      | SMTP server hostname (e.g. `smtp.gmail.com`)                                                        |
+| `SMTP_PORT`              | Yes      | SMTP port — usually `587` (TLS) or `465` (SSL)                                                      |
+| `SMTP_USER`              | Yes      | SMTP username                                                                                       |
+| `SMTP_PASS`              | Yes      | SMTP password or app password                                                                       |
+| `FROM_EMAIL`             | Yes      | Sender address — must be approved in Amazon Kindle settings                                         |
 | `NEXT_PUBLIC_FROM_EMAIL` | Web only | Same value as `FROM_EMAIL`. Displayed in the UI so users know which address to whitelist on Amazon. |
 
 Example `.env` / `.env.local`:
@@ -127,7 +127,7 @@ FROM_EMAIL=you@gmail.com
 NEXT_PUBLIC_FROM_EMAIL=you@gmail.com
 ```
 
-> **Important:** `FROM_EMAIL` must be on your **Approved Personal Document E-mail List** in Amazon before Kindle will accept the emailed EPUBs. Add it at *Manage Your Content and Devices → Preferences → Personal Document Settings*.
+> **Important:** `FROM_EMAIL` must be on your **Approved Personal Document E-mail List** in Amazon before Kindle will accept the emailed EPUBs. Add it at _Manage Your Content and Devices → Preferences → Personal Document Settings_.
 
 > **Gmail note:** Use an [App Password](https://support.google.com/accounts/answer/185833) rather than your normal account password if you have 2-Step Verification enabled.
 
@@ -153,7 +153,7 @@ npm run clean
 
 ### Kindle address not found or document never appears
 
-Confirm `FROM_EMAIL` is on your Approved Personal Document E-mail List. This is separate from your main Amazon address. Find it at *Manage Your Content and Devices → Preferences → Personal Document Settings*.
+Confirm `FROM_EMAIL` is on your Approved Personal Document E-mail List. This is separate from your main Amazon address. Find it at _Manage Your Content and Devices → Preferences → Personal Document Settings_.
 
 ### SMTP authentication error
 
