@@ -7,12 +7,12 @@
     "article-to-kindle": "dist/src/cli.js"
   },
   "scripts": {
-    "dev": "tsx src/cli.ts",
-    "dev:web": "vercel dev",
-    "build": "tsc -p tsconfig.cli.json",
-    "build:web": "next build",
-    "start": "node dist/src/cli.js",
-    "start:web": "next start",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "dev:cli": "tsx src/cli.ts",
+    "build:cli": "tsc -p tsconfig.cli.json",
+    "start:cli": "node dist/src/cli.js",
     "test": "tsx --test tests/validateArticleUrls.test.ts tests/generateEpub.test.ts tests/sendToKindleEmail.test.ts tests/requestValidation.test.ts tests/mapApiResults.test.ts tests/sendToKindleRoute.test.ts",
     "clean": "tsx scripts/cleanGenerated.ts"
   },
