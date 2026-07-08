@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@mozilla/readability": "^0.6.0",
+    "@vercel/analytics": "^2.0.1",
     "chalk": "^4.1.2",
     "dotenv": "^17.4.2",
     "jsdom": "^29.1.1",
