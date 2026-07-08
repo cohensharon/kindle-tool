@@ -36,3 +36,5 @@ Create web API endpoint for sending articles to Kindle.
 - Missing Kindle email
 - Empty URLs
 - Invalid URL
+
+- Also give summary of changes, and instructions on how to manually test API call
