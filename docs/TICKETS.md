@@ -2,7 +2,7 @@ Kindle Tool – Implementation Plan
 
 Overview
 
-This document tracks the overall implementation roadmap. Each ticket has its own detailed specification in `docs/tickets/` (tickets 1–6 today; add files for later tickets as needed).
+This document tracks the overall implementation roadmap. Each ticket has its own detailed specification in `docs/tickets/` (tickets 1–10).
 
 The project should be completed one ticket at a time. Before starting a ticket, Cursor should read:
 
@@ -131,13 +131,13 @@ Ticket 8 – Build User Interface
 
 Goal
 
-Create a simple form for Kindle email and article URLs.
+Create a single-page form for Kindle email and article URLs.
 
 Deliverable
 
-- Responsive page
-- Form components
-- Client-side validation
+- Responsive page with sender whitelist notice
+- Dynamic URL inputs (`UrlInput` with **+** button)
+- Client-side validation (reuse `lib/` validators)
 
 ⸻
 
@@ -149,9 +149,9 @@ Submit requests from the UI to the backend.
 
 Deliverable
 
-- API integration
-- Success and error handling
-- Loading state
+- API integration with page-level state
+- Minimal per-URL results list
+- Loading and form-level error handling
 
 ⸻
 
@@ -163,9 +163,9 @@ Polish the application.
 
 Deliverable
 
-- Better status messages
-- Improved error display
-- Responsive layout improvements
+- Styled results, batch summary, clear-results flow
+- Refined helper copy and error display
+- Responsive layout and touch-friendly controls
 
 ⸻
 
