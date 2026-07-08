@@ -5,7 +5,7 @@ import type {
 } from "../types/article.js";
 import { extractArticle } from "../services/extractArticle.js";
 import { generateEpub } from "../../lib/generateEpub.js";
-import { sendEmail } from "../services/sendEmail.js";
+import { sendToKindleEmail } from "../../lib/sendToKindleEmail.js";
 import { validateGeneratedEpub } from "../utils/epubValidation.js";
 
 export async function sendArticleToKindle(
@@ -35,11 +35,11 @@ export async function sendArticleToKindle(
       title,
       epubPath,
     });
-    await sendEmail({
-      to: input.kindleEmail,
+    await sendToKindleEmail({
+      kindleEmail: input.kindleEmail,
       subject: title,
       text: `Attached EPUB for "${title}".\n\nSource: ${article.sourceUrl}`,
-      attachmentPath: epubPath,
+      epubPath,
     });
 
     return {
