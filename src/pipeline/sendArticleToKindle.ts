@@ -4,7 +4,7 @@ import type {
   SendArticleResult,
 } from "../types/article.js";
 import { extractArticle } from "../services/extractArticle.js";
-import { generateEpub } from "../services/generateEpub.js";
+import { generateEpub } from "../../lib/generateEpub.js";
 import { sendEmail } from "../services/sendEmail.js";
 import { validateGeneratedEpub } from "../utils/epubValidation.js";
 
