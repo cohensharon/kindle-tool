@@ -6,6 +6,8 @@
 
 A single-page form where you enter your Kindle email and one or more article URLs. The app converts each article to an EPUB and emails it to your device.
 
+**Live demo:** [https://kindle-tool-jmpbbwx10-cohensharon1995-8830s-projects.vercel.app/](https://kindle-tool-jmpbbwx10-cohensharon1995-8830s-projects.vercel.app/)
+
 ### Run the web app locally
 
 Install dependencies:
