@@ -1,8 +1,8 @@
 {
-  "framework": "nextjs",
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "@vercel/node@5"
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
     }
-  }
+  ]
 }
