@@ -13,7 +13,7 @@
     "build:web": "next build",
     "start": "node dist/src/cli.js",
     "start:web": "next start",
-    "test": "tsx --test tests/validateArticleUrls.test.ts tests/generateEpub.test.ts tests/sendToKindleEmail.test.ts tests/requestValidation.test.ts",
+    "test": "tsx --test tests/validateArticleUrls.test.ts tests/generateEpub.test.ts tests/sendToKindleEmail.test.ts tests/requestValidation.test.ts tests/mapApiResults.test.ts tests/sendToKindleRoute.test.ts",
     "clean": "tsx scripts/cleanGenerated.ts"
   },
   "keywords": [],

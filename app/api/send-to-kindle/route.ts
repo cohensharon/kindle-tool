@@ -1,4 +1,8 @@
 import { NextResponse } from "next/server";
+import type {
+  SendToKindleErrorResponse,
+  SendToKindleSuccessResponse,
+} from "@/lib/apiTypes";
 import { mapSendArticleResultToApiResult } from "@/lib/mapApiResults";
 import { validateSendToKindleRequest } from "@/lib/requestValidation";
 import { sendArticlesToKindle } from "@/lib/sendArticlesToKindle";
@@ -9,16 +13,19 @@ export async function POST(request: Request): Promise<NextResponse> {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json(
-      { error: "Request body must be valid JSON." },
-      { status: 400 },
-    );
+    const body: SendToKindleErrorResponse = {
+      error: "Request body must be valid JSON.",
+    };
+
+    return NextResponse.json(body, { status: 400 });
   }
 
   const validation = validateSendToKindleRequest(body);
 
   if (!validation.valid) {
-    return NextResponse.json({ error: validation.error }, { status: 400 });
+    const errorBody: SendToKindleErrorResponse = { error: validation.error };
+
+    return NextResponse.json(errorBody, { status: 400 });
   }
 
   try {
@@ -27,15 +34,17 @@ export async function POST(request: Request): Promise<NextResponse> {
       urls: validation.request.urls,
     });
 
-    return NextResponse.json({
+    const responseBody: SendToKindleSuccessResponse = {
       results: results.map(mapSendArticleResultToApiResult),
-    });
+    };
+
+    return NextResponse.json(responseBody);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
+    const errorBody: SendToKindleErrorResponse = {
+      error: `Unexpected server error: ${message}`,
+    };
 
-    return NextResponse.json(
-      { error: `Unexpected server error: ${message}` },
-      { status: 500 },
-    );
+    return NextResponse.json(errorBody, { status: 500 });
   }
 }

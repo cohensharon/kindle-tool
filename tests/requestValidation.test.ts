@@ -27,6 +27,18 @@ describe("validateSendToKindleRequest", () => {
     }
   });
 
+  it("rejects an invalid Kindle email", () => {
+    const result = validateSendToKindleRequest({
+      kindleEmail: "not-an-email",
+      urls: ["https://example.com/article"],
+    });
+
+    assert.equal(result.valid, false);
+    if (!result.valid) {
+      assert.equal(result.error, "Invalid Kindle email.");
+    }
+  });
+
   it("rejects empty URLs", () => {
     const result = validateSendToKindleRequest({
       kindleEmail: "reader@kindle.com",
