@@ -3,7 +3,7 @@ import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, it } from "node:test";
-import { extractArticle } from "../src/services/extractArticle.js";
+import { extractArticle } from "../lib/extractArticle.js";
 import type { ExtractedArticle } from "../src/types/article.js";
 import { generateEpub, tryGenerateEpub } from "../lib/generateEpub.js";
 

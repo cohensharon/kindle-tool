@@ -1,6 +1,6 @@
 import { Readability } from "@mozilla/readability";
 import { JSDOM } from "jsdom";
-import type { ExtractedArticle } from "../types/article.js";
+import type { ExtractedArticle } from "../src/types/article.js";
 
 export async function extractArticle(url: string): Promise<ExtractedArticle> {
   let response: Response;

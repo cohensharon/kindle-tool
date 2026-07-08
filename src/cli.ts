@@ -3,9 +3,9 @@
 import "dotenv/config";
 import { createInterface, type Interface as ReadlineInterface } from "node:readline";
 import { stdin as input, stdout as output } from "node:process";
+import { sendArticlesToKindle } from "../lib/sendArticlesToKindle.js";
 import { validateArticleUrl } from "../lib/validateArticleUrls.js";
-import { looksLikeEmail } from "./utils/validation.js";
-import { sendArticleToKindle } from "./pipeline/sendArticleToKindle.js";
+import { validateKindleEmail } from "../lib/validateKindleEmail.js";
 import type { SendArticleResult } from "./types/article.js";
 import { log } from "./utils/log.js";
 
@@ -26,9 +26,7 @@ function createPrompt(readline: ReadlineInterface): Prompt {
   };
 }
 
-async function collectArticleUrls(
-  prompt: Prompt,
-): Promise<string[]> {
+async function collectArticleUrls(prompt: Prompt): Promise<string[]> {
   const urls: string[] = [];
 
   while (true) {
@@ -58,44 +56,18 @@ async function collectArticleUrls(
   }
 }
 
-async function collectKindleEmail(
-  prompt: Prompt,
-): Promise<string> {
+async function collectKindleEmail(prompt: Prompt): Promise<string> {
   while (true) {
-    const email = (await prompt("Enter Kindle email address:\n> ")).trim();
+    const validationResult = validateKindleEmail(
+      await prompt("Enter Kindle email address:\n> "),
+    );
 
-    if (looksLikeEmail(email)) {
-      return email;
+    if (validationResult.valid) {
+      return validationResult.email;
     }
 
-    log.error("Please enter a valid email address.");
+    log.error(validationResult.error);
   }
-}
-
-async function processArticles(
-  urls: string[],
-  kindleEmail: string,
-): Promise<void> {
-  log.info(`Processing ${urls.length} article(s)...`);
-  const results: SendArticleResult[] = [];
-
-  for (const [index, url] of urls.entries()) {
-    log.info(`[${index + 1}/${urls.length}] Processing ${url}`);
-
-    try {
-      const result = await sendArticleToKindle({ url, kindleEmail });
-      results.push(result);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Unknown error";
-      results.push({
-        success: false,
-        url,
-        error: message,
-      });
-    }
-  }
-
-  printArticleReport(results);
 }
 
 function printArticleReport(results: SendArticleResult[]): void {
@@ -113,7 +85,6 @@ function printArticleReport(results: SendArticleResult[]): void {
 
   const successfulCount = results.filter((result) => result.success).length;
   const failedCount = results.length - successfulCount;
-
   const summary = `Done. Successful: ${successfulCount} Failed: ${failedCount}`;
 
   if (failedCount > 0) {
@@ -131,7 +102,18 @@ async function main(): Promise<void> {
     const urls = await collectArticleUrls(prompt);
     const kindleEmail = await collectKindleEmail(prompt);
 
-    await processArticles(urls, kindleEmail);
+    log.info(`Processing ${urls.length} article(s)...`);
+
+    const results = await sendArticlesToKindle(
+      { urls, kindleEmail },
+      {
+        onArticleStart: ({ index, total, url }) => {
+          log.info(`[${index}/${total}] Processing ${url}`);
+        },
+      },
+    );
+
+    printArticleReport(results);
   } finally {
     readline.close();
   }

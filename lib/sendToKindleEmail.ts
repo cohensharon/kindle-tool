@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { looksLikeEmail } from "../src/utils/validation.js";
+import { looksLikeEmail } from "./validateKindleEmail.js";
 
 export interface SendToKindleEmailInput {
   kindleEmail: string;

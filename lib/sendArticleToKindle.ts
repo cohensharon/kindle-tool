@@ -2,11 +2,11 @@ import type {
   ArticleInput,
   SendArticleOptions,
   SendArticleResult,
-} from "../types/article.js";
-import { extractArticle } from "../services/extractArticle.js";
-import { generateEpub } from "../../lib/generateEpub.js";
-import { sendToKindleEmail } from "../../lib/sendToKindleEmail.js";
-import { validateGeneratedEpub } from "../utils/epubValidation.js";
+} from "../src/types/article.js";
+import { extractArticle } from "./extractArticle.js";
+import { generateEpub } from "./generateEpub.js";
+import { validateGeneratedEpub } from "./epubValidation.js";
+import { sendToKindleEmail } from "./sendToKindleEmail.js";
 
 export async function sendArticleToKindle(
   input: ArticleInput,
