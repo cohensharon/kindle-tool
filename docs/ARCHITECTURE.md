@@ -8,38 +8,20 @@
 - Serverless API route
 - Existing CLI logic refactored into reusable services
 
-## Current vs Target
-
-### Current (CLI-only)
-
-Business logic and the CLI live under `src/`:
-
-- `src/cli.ts` — CLI entrypoint (prompts and user interaction)
-- `src/pipeline/sendArticleToKindle.ts` — shared orchestrator
-- `src/services/` — extract article, generate EPUB, send email
-- `src/types/` — shared input/output types
-- `src/utils/` — validation, EPUB checks, logging
-- `scripts/` — utility scripts (e.g. cleanup)
-
-There is no `app/` or `lib/` directory yet.
-
-### Target (CLI + web app)
+## Structure
 
 - `app/page.tsx` — single-page UI
+- `app/components/` — `UrlInput`, `ResultsList`
 - `app/api/send-to-kindle/route.ts` — POST endpoint
-- `lib/` — reusable business logic (migrated from `src/services/`, `src/pipeline/`, and related utils/types)
-- `src/cli.ts` or `cli/` — thin CLI wrapper that calls the same orchestrator as the API
-
-### Migration
-
-As tickets progress, move reusable logic from `src/` into `lib/` without changing behavior. The CLI and API should both call the same orchestrator; do not re-wire the pipeline separately in each entrypoint.
+- `lib/` — reusable business logic shared by CLI and API
+- `src/cli.ts` — thin CLI wrapper that calls the same orchestrator as the API
+- `scripts/` — utility scripts (e.g. cleanup)
 
 ## Shared Orchestrator
 
 `sendArticleToKindle` is the single integration point for CLI and API.
 
-- **Current location:** `src/pipeline/sendArticleToKindle.ts`
-- **Target location:** `lib/sendArticleToKindle.ts`
+- **Location:** `lib/sendArticleToKindle.ts`
 
 It coordinates the full per-article flow:
 

@@ -1,43 +1,12 @@
 # article-to-kindle
 
-`article-to-kindle` is a TypeScript Node CLI that takes one or more article URLs, extracts readable article content, generates one EPUB per article, and emails each EPUB to a Kindle email address.
+`article-to-kindle` converts article URLs to EPUBs and sends them to a Kindle email address. It ships as both a **web app** (Next.js) and a **CLI** (Node.js). Both use the same underlying pipeline.
 
-## MVP Scope
+## Web App
 
-This MVP supports a single local CLI workflow:
+A single-page form where you enter your Kindle email and one or more article URLs. The app converts each article to an EPUB and emails it to your device.
 
-- Prompt for article URLs one at a time.
-- Validate that each URL is HTTP or HTTPS.
-- Prompt for a Kindle email address.
-- Extract readable article content with Mozilla Readability.
-- Generate a separate EPUB file for each article in `generated/`.
-- Validate generated EPUB files with lightweight checks.
-- Email each EPUB as an attachment through SMTP.
-- Continue processing remaining URLs if one article fails.
-- Print a one-line report for each article at the end.
-
-## Commands
-
-- `npm install`: install project dependencies.
-- `npm run dev`: run the TypeScript CLI locally.
-- `npm run build`: compile TypeScript into `dist/`.
-- `npm start`: run the compiled CLI from `dist/`.
-- `npm run clean`: delete generated `.epub` files from `generated/`.
-
-## Not Included Yet
-
-This MVP intentionally does not include:
-
-- A web server or Express API.
-- A frontend.
-- User accounts or authentication.
-- A database.
-- A background queue.
-- A Chrome extension.
-- Retry logic.
-- EPUB spec validation beyond lightweight file checks.
-
-## Setup
+### Run the web app locally
 
 Install dependencies:
 
@@ -45,39 +14,51 @@ Install dependencies:
 npm install
 ```
 
-Create a local `.env` file:
+Create a `.env.local` file for Next.js:
+
+```bash
+cp .env.example .env.local
+```
+
+Fill in your SMTP credentials and sending address (see [Environment Variables](#environment-variables) below).
+
+Start the development server:
+
+```bash
+npm run dev:web
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Web app commands
+
+| Command | Description |
+|---|---|
+| `npm run dev:web` | Start the Next.js development server |
+| `npm run build:web` | Build the Next.js app for production |
+| `npm run start:web` | Start the built Next.js app |
+
+## CLI
+
+The original command-line interface. Prompts for article URLs one at a time, then sends each EPUB to the Kindle address you provide.
+
+### Run the CLI locally
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create a `.env` file for the CLI:
 
 ```bash
 cp .env.example .env
 ```
 
-Fill in your SMTP settings in `.env`.
+Fill in your SMTP credentials and sending address.
 
-Important: the `FROM_EMAIL` sender address must be approved in your Amazon Kindle settings before Kindle will accept emailed EPUB attachments.
-
-## Environment Variables
-
-Required variables:
-
-- `SMTP_HOST`: SMTP server hostname.
-- `SMTP_PORT`: SMTP server port, usually `587` or `465`.
-- `SMTP_USER`: SMTP username.
-- `SMTP_PASS`: SMTP password or app password.
-- `FROM_EMAIL`: sender email address approved in Amazon Kindle settings.
-
-Example:
-
-```env
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_USER=your-smtp-user
-SMTP_PASS=your-smtp-password
-FROM_EMAIL=approved-sender@example.com
-```
-
-## Run The CLI
-
-Start the CLI in development:
+Start the CLI:
 
 ```bash
 npm run dev
@@ -85,7 +66,7 @@ npm run dev
 
 Enter article URLs one at a time. Type `done` when finished, then enter your Kindle email address.
 
-Example flow:
+Example session:
 
 ```txt
 Paste an article URL, or type "done":
@@ -111,11 +92,56 @@ Report:
 Done. Successful: 1 Failed: 1
 ```
 
+### CLI commands
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Run the CLI with `tsx` (no build step) |
+| `npm run build` | Compile TypeScript CLI into `dist/` |
+| `npm start` | Run the compiled CLI from `dist/` |
+| `npm run clean` | Delete generated `.epub` files from `generated/` |
+
+## Environment Variables
+
+Both the web app and the CLI share the same SMTP variables. The web app reads from `.env.local`; the CLI reads from `.env`.
+
+| Variable | Required | Description |
+|---|---|---|
+| `SMTP_HOST` | Yes | SMTP server hostname (e.g. `smtp.gmail.com`) |
+| `SMTP_PORT` | Yes | SMTP port — usually `587` (TLS) or `465` (SSL) |
+| `SMTP_USER` | Yes | SMTP username |
+| `SMTP_PASS` | Yes | SMTP password or app password |
+| `FROM_EMAIL` | Yes | Sender address — must be approved in Amazon Kindle settings |
+| `NEXT_PUBLIC_FROM_EMAIL` | Web only | Same value as `FROM_EMAIL`. Displayed in the UI so users know which address to whitelist on Amazon. |
+
+Example `.env` / `.env.local`:
+
+```env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=you@gmail.com
+SMTP_PASS=your-app-password
+FROM_EMAIL=you@gmail.com
+NEXT_PUBLIC_FROM_EMAIL=you@gmail.com
+```
+
+> **Important:** `FROM_EMAIL` must be on your **Approved Personal Document E-mail List** in Amazon before Kindle will accept the emailed EPUBs. Add it at *Manage Your Content and Devices → Preferences → Personal Document Settings*.
+
+> **Gmail note:** Use an [App Password](https://support.google.com/accounts/answer/185833) rather than your normal account password if you have 2-Step Verification enabled.
+
+## Tests
+
+```bash
+npm test
+```
+
+Runs unit tests for URL validation, EPUB generation, email sending, request validation, and API result mapping.
+
 ## Generated Files
 
 EPUB files are written to `generated/`. This directory is ignored by git.
 
-To remove generated EPUB files:
+To remove them:
 
 ```bash
 npm run clean
@@ -123,29 +149,18 @@ npm run clean
 
 ## Troubleshooting
 
-### Kindle Sender Email Not Approved
+### Kindle address not found or document never appears
 
-If the email sends successfully but the document never appears on Kindle, confirm that `FROM_EMAIL` is approved in your Amazon Kindle settings.
+Confirm `FROM_EMAIL` is on your Approved Personal Document E-mail List. This is separate from your main Amazon address. Find it at *Manage Your Content and Devices → Preferences → Personal Document Settings*.
 
-### SMTP Auth Failure
+### SMTP authentication error
 
-If you see an SMTP authentication error, check `SMTP_USER`, `SMTP_PASS`, and whether your provider requires an app password instead of your normal account password.
+Check `SMTP_USER` and `SMTP_PASS`. Gmail and many other providers require an **app password** rather than your normal login password when 2FA is enabled.
 
-### Article Extraction Failed
+### Article extraction failed
 
-Some pages block fetch requests, require JavaScript, or do not contain readable article content. Try another article URL and confirm the URL is publicly reachable.
+Some pages block server-side fetch requests, require JavaScript rendering, or contain no readable article content. Confirm the URL is publicly accessible and try a different article.
 
-### EPUB Generated But Not Delivered
+### EPUB sent but never arrived on Kindle
 
-Check that the EPUB file exists in `generated/`, the file is larger than 5KB, the SMTP provider accepted the message, and the Kindle email address is correct.
-
-## Future Improvements
-
-- Main article image as cover image
-- Express API wrapper.
-- Chrome extension.
-- Article queue.
-- Retry logic.
-- Daily digest mode.
-- User accounts.
-- Database-backed article history.
+Check that the EPUB exists in `generated/` and is larger than 5 KB, verify that your SMTP provider accepted the message without error, and confirm the Kindle email address is correct.

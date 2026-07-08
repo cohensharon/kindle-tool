@@ -63,7 +63,8 @@ Expected variables:
 - `SMTP_PORT`
 - `SMTP_USER`
 - `SMTP_PASS`
-- `SMTP_FROM`
+- `FROM_EMAIL`
+- `NEXT_PUBLIC_FROM_EMAIL` (web app only — same value as `FROM_EMAIL`, exposed to the browser)
 
 ## Testing
 
